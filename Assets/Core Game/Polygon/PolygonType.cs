@@ -22,8 +22,9 @@ namespace PolygonCrosser
 	{
 		None,
 		Circle,
+		Triangle,
 		Square,
 		Hexagon,
-		Triangle
+		Octogon
 	}
 }

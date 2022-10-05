@@ -32,6 +32,7 @@ namespace PolygonCrosser
 		}
 
 		[SerializeField] private AllIn1Shader playerShader;
+		[SerializeField] private ParticleSystem effect;
 		private Rigidbody2D rb;
 		public float dashSpeed;
 		private DashDirection dashDirection;
@@ -89,6 +90,8 @@ namespace PolygonCrosser
 				print("You failed to choose the correct color/shape! (Died)");
 				GameHandler.ShouldSpawn = true;
 			}
+			effect = other.GetComponent<ParticleHandler>().effect;
+			effect.Play();
 			ResetPlayerPosition();
 		}
 		private void ResetPlayerPosition()

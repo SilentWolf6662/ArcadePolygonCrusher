@@ -23,5 +23,6 @@ namespace PolygonCrosser
 		public Sprite Triangle;
 		public Sprite Square;
 		public Sprite Hexagon;
+		public Sprite Octogon;
 	}
 }

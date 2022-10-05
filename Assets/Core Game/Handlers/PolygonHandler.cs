@@ -12,7 +12,6 @@
 // 
 // ******************************************************************************************************************
 #endregion
-using System;
 using System.Collections.Generic;
 using Core_Game.Handlers;
 using UnityEngine;
@@ -23,17 +22,18 @@ namespace PolygonCrosser
 	public class PolygonHandler : MonoBehaviour
 	{
 		public SpriteRenderer playerGraphic;
-		[SerializeField] private SpriteSheet spriteSheet;
+		private static SpriteSheet spriteSheet;
 		[SerializeField] private LayerMask layerMask;
 		public Polygon playerPolygon;
 		public static int DirectionAmount = 4;
 		public List<Polygon> polygons = new List<Polygon>(DirectionAmount);
 		public List<Polygon> polys = new List<Polygon>(DirectionAmount);
 		[SerializeField] private SpriteRenderer[] polyGraphics;
+		[SerializeField] private GameHandler gameHandler;
 
 		private void Awake()
 		{
-			if (spriteSheet == null) spriteSheet = GetComponent<SpriteSheet>();
+			if (spriteSheet == null) spriteSheet = FindObjectOfType<SpriteSheet>();
 		}
 
 		private void Start()
@@ -43,22 +43,21 @@ namespace PolygonCrosser
 		}
 		public static void ClearStats()
 		{
-
 			PointHandler.ClearPoints();
 			DifficultyHandler.ClearLevels();
 			GameHandler.ClearDiff();
 		}
 
-		public void NewRandomPolys(Color color = new Color(), Color color2 = new Color(), Color color3 = new Color(), Color color4 = new Color())
+		public void NewRandomPolys(Color color = new Color())
 		{
-
+			int activePolygons = 0;
+			foreach (GameObject polyObject in gameHandler.GetPolyObjects)
+				if (polyObject.activeInHierarchy) activePolygons++;
 			Polygon poly1 = RandomizePolygon(color);
 			ChangePlayerPolygon(poly1);
 			polygons.Clear();
 			polygons.Add(poly1);
-			polygons.Add(RandomizePolygon(color2));
-			polygons.Add(RandomizePolygon(color3));
-			polygons.Add(RandomizePolygon(color4));
+			for (int i = 0; i < activePolygons; i++) if (i != 0) polygons.Add(RandomizePolygon(color));
 			polygons = polygons.Shuffle();
 			polys.Clear();
 			foreach (Polygon polygon in polygons) polys.Add(polygon);
@@ -68,7 +67,7 @@ namespace PolygonCrosser
 				ChangePolygonSprite(polyGraphics[i], polys[i]);
 			}
 		}
-		private static Polygon RandomizePolygon(Color color = new Color())
+		public static Polygon RandomizePolygon(Color color = new Color())
 		{
 			PolygonType polygonType = (PolygonType)Random.Range(1, 5);
 			if (color == new Color()) color = new Color(Random.Range(0.50f, 1.0f), Random.Range(0.50f, 1.0f), Random.Range(0.50f, 1.0f), 1.0f);
@@ -81,12 +80,13 @@ namespace PolygonCrosser
 			playerGraphic.color = playerPolygon.Color;
 			ChangePolygonSprite(playerGraphic, playerPolygon);
 		}
-		private void ChangePolygonSprite(SpriteRenderer graphic, Polygon polygonType)
+		public static void ChangePolygonSprite(SpriteRenderer graphic, Polygon polygonType)
 		{
 			if (polygonType.Type == PolygonType.Circle) graphic.sprite = spriteSheet.Circle;
 			if (polygonType.Type == PolygonType.Triangle) graphic.sprite = spriteSheet.Triangle;
 			if (polygonType.Type == PolygonType.Square) graphic.sprite = spriteSheet.Square;
 			if (polygonType.Type == PolygonType.Hexagon) graphic.sprite = spriteSheet.Hexagon;
+			if (polygonType.Type == PolygonType.Octogon) graphic.sprite = spriteSheet.Octogon;
 		}
 	}
 }

@@ -12,6 +12,8 @@
 // 
 // ******************************************************************************************************************
 #endregion
+using Core_Game.Handlers;
+using PolygonCrosser;
 namespace UnityEngine.Difficulty
 {
 	public class DifficultyHandler
@@ -33,7 +35,7 @@ namespace UnityEngine.Difficulty
 		public bool CanLevelBeDevideByTen()
 		{
 			points = PointHandler.GetPoints();
-			tempPoints = points / Level;
+			if (points > 0) tempPoints = points / Level;
 			return tempPoints >= 10;
 		}
 		public bool CanLevelBeDevideByX(int numberToCheck)
@@ -46,17 +48,25 @@ namespace UnityEngine.Difficulty
 		{
 			if (polygons.Length < amount) return;
 			for (int i = 0; i < amount; i++)
-			{
-				if (polygons.Length >= i) polygons[i].SetActive(true);
-			}
+				if (polygons.Length >= i)
+				{
+					Polygon tempPolygon = PolygonHandler.RandomizePolygon();
+					GameHandler tempGameHandler = Object.FindObjectOfType<GameHandler>();
+					SpriteRenderer tempPoly = tempGameHandler.GetPolyObjects[i].GetComponent<SpriteRenderer>();
+					tempPoly.color = tempPolygon.Color;
+					PolygonHandler.ChangePolygonSprite(tempPoly, tempPolygon);
+					SpriteRenderer firstPoly =  polygons[i].GetComponent<SpriteRenderer>();
+					firstPoly.color = tempPoly.color;
+					firstPoly.sprite = tempPoly.sprite;
+					polygons[i].SetActive(true);
+				}
+
 		}
 		public void DespawnPolygons(int amount, GameObject[] polygons)
 		{
 			if (polygons.Length < amount) return;
 			for (int i = 0; i < amount; i++)
-			{
 				if (polygons.Length >= i) polygons[i].SetActive(false);
-			}
 		}
 	}
 }

@@ -41,33 +41,45 @@ namespace Core_Game.Handlers
 			else if (DifficultyHandler.GetLevel() == 5) diff = 3;
 			if (!ShouldSpawn) return;
 			wfc = false;
-
+			int activePolygons = 0;
+			foreach (GameObject polyObject in GetPolyObjects)
+				if (polyObject.activeInHierarchy) activePolygons++;
 			if (diff == 0)
 			{
 				color = Color.white;
+				difficultyHandler.DespawnPolygons(activePolygons, polyObjects);
+				difficultyHandler.SpawnPolygons(1, polyObjects);
 				wfc = true;
 			}
 			else if (diff == 1)
 			{
 				color = new Color(255, 124, 124, 255);
+				difficultyHandler.DespawnPolygons(activePolygons, polyObjects);
+				difficultyHandler.SpawnPolygons(2, polyObjects);
 				wfc = true;
 			}
 			else if (diff == 2)
 			{
 				color = new Color(124, 124, 255, 255);
 				wfc = true;
+				difficultyHandler.DespawnPolygons(activePolygons, polyObjects);
+				difficultyHandler.SpawnPolygons(3, polyObjects);
 			}
 			else if (diff == 3)
 			{
 				color = new Color(124, 255, 124, 255);
 				wfc = true;
+				difficultyHandler.DespawnPolygons(activePolygons, polyObjects);
+				difficultyHandler.SpawnPolygons(4, polyObjects);
 			}
 			if (wfc)
 			{
-				polygonHandler.NewRandomPolys(color, color, color, color);
+				polygonHandler.NewRandomPolys(color);
 				ShouldSpawn = false;
 			}
 		}
+
+		public GameObject[] GetPolyObjects => polyObjects;
 		public static void ClearDiff() => diff = 0;
 	}
 }
