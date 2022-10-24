@@ -36,9 +36,21 @@ namespace Core_Game.Handlers
 		private void Update()
 		{
 			difficultyHandler.IncreaseLvlPer10Points();
-			if (DifficultyHandler.GetLevel() == 3) diff = 1;
-			else if (DifficultyHandler.GetLevel() == 4) diff = 2;
-			else if (DifficultyHandler.GetLevel() == 5) diff = 3;
+			if (PointHandler.GetPoints() == 3)
+			{
+				DifficultyHandler.Up1();
+				diff = 1;
+			}
+			else if (PointHandler.GetPoints() == 13) 
+			{
+				DifficultyHandler.Up1();
+				diff = 2;
+			}
+			else if (PointHandler.GetPoints() == 23) 
+			{
+				DifficultyHandler.Up1();
+				diff = 3;
+			}
 			if (!ShouldSpawn) return;
 			wfc = false;
 			int activePolygons = 0;

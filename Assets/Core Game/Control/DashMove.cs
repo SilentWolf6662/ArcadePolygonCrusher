@@ -16,8 +16,10 @@
 #endregion
 using System;
 using Core_Game.Handlers;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Difficulty;
+using UnityEngine.SceneManagement;
 namespace PolygonCrosser
 {
 	public class DashMove : MonoBehaviour
@@ -84,15 +86,15 @@ namespace PolygonCrosser
 				print($"Points: {PointHandler.GetPoints().ToString()} | Level: {DifficultyHandler.GetLevel().ToString()}");
 				GameHandler.ShouldSpawn = true;
 			}
-			else
-			{
-				PointHandler.ClearPoints();
-				print("You failed to choose the correct color/shape! (Died)");
-				GameHandler.ShouldSpawn = true;
-			}
-			effect = other.GetComponent<ParticleHandler>().effect;
-			effect.Play();
+			else Die();
 			ResetPlayerPosition();
+		}
+		private static void Die()
+		{
+			PointHandler.ClearPoints();
+			print("You failed to choose the correct color/shape! (Died)");
+			AsyncOperation sceneToLoad = SceneManager.LoadSceneAsync((int)Scenes.Gameover, LoadSceneMode.Additive);
+			if (sceneToLoad.isDone) SceneManager.UnloadSceneAsync((int)Scenes.Gameplay);
 		}
 		private void ResetPlayerPosition()
 		{

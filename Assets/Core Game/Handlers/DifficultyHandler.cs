@@ -55,12 +55,11 @@ namespace UnityEngine.Difficulty
 					SpriteRenderer tempPoly = tempGameHandler.GetPolyObjects[i].GetComponent<SpriteRenderer>();
 					tempPoly.color = tempPolygon.Color;
 					PolygonHandler.ChangePolygonSprite(tempPoly, tempPolygon);
-					SpriteRenderer firstPoly =  polygons[i].GetComponent<SpriteRenderer>();
+					SpriteRenderer firstPoly = polygons[i].GetComponent<SpriteRenderer>();
 					firstPoly.color = tempPoly.color;
 					firstPoly.sprite = tempPoly.sprite;
 					polygons[i].SetActive(true);
 				}
-
 		}
 		public void DespawnPolygons(int amount, GameObject[] polygons)
 		{
