@@ -30,6 +30,8 @@ namespace PolygonCrosser
 		public List<Polygon> polys = new List<Polygon>(DirectionAmount);
 		[SerializeField] private SpriteRenderer[] polyGraphics;
 		[SerializeField] private GameHandler gameHandler;
+		private const float maxColorValue = 1f;
+		private const float minColorValue = 0f;
 
 		private void Awake()
 		{
@@ -67,10 +69,11 @@ namespace PolygonCrosser
 				ChangePolygonSprite(polyGraphics[i], polys[i]);
 			}
 		}
+
 		public static Polygon RandomizePolygon(Color color = new Color())
 		{
 			PolygonType polygonType = (PolygonType)Random.Range(1, 5);
-			if (color == new Color()) color = new Color(Random.Range(0.50f, 1.0f), Random.Range(0.50f, 1.0f), Random.Range(0.50f, 1.0f), 1.0f);
+			if (color == new Color()) color = new Color(Random.Range(minColorValue, maxColorValue), Random.Range(minColorValue, maxColorValue), Random.Range(minColorValue, maxColorValue), 1.0f);
 			return new Polygon(polygonType, color, default);
 		}
 

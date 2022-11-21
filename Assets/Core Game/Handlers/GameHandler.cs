@@ -12,7 +12,6 @@
 // 
 // ******************************************************************************************************************
 #endregion
-using System;
 using PolygonCrosser;
 using UnityEngine;
 using UnityEngine.Difficulty;
@@ -36,25 +35,11 @@ namespace Core_Game.Handlers
 		private void Update()
 		{
 			difficultyHandler.IncreaseLvlPer10Points();
-			if (PointHandler.GetPoints() == 3)
-			{
-				DifficultyHandler.Up1();
-				diff = 1;
-			}
-			else if (PointHandler.GetPoints() == 13) 
-			{
-				DifficultyHandler.Up1();
-				diff = 2;
-			}
-			else if (PointHandler.GetPoints() == 23) 
-			{
-				DifficultyHandler.Up1();
-				diff = 3;
-			}
+			DiffUp();
 			if (!ShouldSpawn) return;
 			wfc = false;
 			int activePolygons = 0;
-			foreach (GameObject polyObject in GetPolyObjects)
+			foreach (GameObject polyObject in polyObjects)
 				if (polyObject.activeInHierarchy) activePolygons++;
 			if (diff == 0)
 			{
@@ -86,8 +71,28 @@ namespace Core_Game.Handlers
 			}
 			if (wfc)
 			{
+				color = new Color(); // new Color(Random.Range(0.50f, 1.0f), Random.Range(0.50f, 1.0f), Random.Range(0.50f, 1.0f), 1.0f);
 				polygonHandler.NewRandomPolys(color);
 				ShouldSpawn = false;
+			}
+		}
+		private static void DiffUp()
+		{
+
+			if (PointHandler.GetPoints() == 3)
+			{
+				DifficultyHandler.Up1();
+				diff = 1;
+			}
+			else if (PointHandler.GetPoints() == 13)
+			{
+				DifficultyHandler.Up1();
+				diff = 2;
+			}
+			else if (PointHandler.GetPoints() == 23)
+			{
+				DifficultyHandler.Up1();
+				diff = 3;
 			}
 		}
 

@@ -21,10 +21,20 @@ namespace PolygonCrosser.Scoreboard
 		[SerializeField] private TMP_InputField playerNameField;
 		[SerializeField] private TextMeshProUGUI score;
 		[SerializeField] private PlayerScore playerScore;
+		[SerializeField] private GameObject[] itemsToHideWhileHighscoreNotBeaten;
+
+		private void OnEnable()
+		{
+			playerScore.score = PlayerPrefs.GetInt("score");
+			if (playerScore.score > PlayerPrefs.GetInt("highscore")) 
+				foreach (GameObject obj in itemsToHideWhileHighscoreNotBeaten) obj.SetActive(true);
+			else 
+				foreach (GameObject obj in itemsToHideWhileHighscoreNotBeaten) obj.SetActive(false);
+		}
 		private void Update()
 		{
 			playerScore.score = PointHandler.GetPoints();
-			score.text = $"SCORE: {PlayerPrefs.GetInt("highscore")}";
+			score.text = $"{PlayerPrefs.GetInt("highscore")}";
 		}
 		public void SendScore()
 		{

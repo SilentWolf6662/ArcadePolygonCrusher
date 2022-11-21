@@ -15,8 +15,8 @@
 
 #endregion
 using System;
+using System.Collections;
 using Core_Game.Handlers;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Difficulty;
 using UnityEngine.SceneManagement;
@@ -33,17 +33,19 @@ namespace PolygonCrosser
 			NoDirection
 		}
 
-		[SerializeField] private AllIn1Shader playerShader;
-		[SerializeField] private ParticleSystem effect;
 		private Rigidbody2D rb;
-		public float dashSpeed;
+		[SerializeField] private float dashSpeed;
 		private DashDirection dashDirection;
-		public float dashDuration;
-		public float dashTimer;
+		[SerializeField] private float dashDuration;
+		[SerializeField] private float dashTimer;
 		[SerializeField] private PolygonHandler polygonHandler;
 
 		private void Awake() => rb = GetComponent<Rigidbody2D>();
-		private void Start() => dashDirection = DashDirection.NoDirection;
+		private void Start() 
+		{
+			dashDirection = DashDirection.NoDirection;
+			PointHandler.ClearPoints();
+		}
 
 		private void Update()
 		{
@@ -70,32 +72,56 @@ namespace PolygonCrosser
 		private void InputHandler()
 		{
 			Func<KeyCode,bool> keyDown = Input.GetKeyDown;
-			if (keyDown(KeyCode.DownArrow)) dashDirection = DashDirection.Down;
-			if (keyDown(KeyCode.UpArrow)) dashDirection = DashDirection.Up;
-			if (keyDown(KeyCode.LeftArrow)) dashDirection = DashDirection.Left;
-			if (keyDown(KeyCode.RightArrow)) dashDirection = DashDirection.Right;
+			if (keyDown(KeyCode.DownArrow) && !keyDown(KeyCode.UpArrow) && !keyDown(KeyCode.LeftArrow) && !keyDown(KeyCode.RightArrow)) dashDirection = DashDirection.Down;
+			if (keyDown(KeyCode.UpArrow) && !keyDown(KeyCode.DownArrow) && !keyDown(KeyCode.LeftArrow) && !keyDown(KeyCode.RightArrow)) dashDirection = DashDirection.Up;
+			if (keyDown(KeyCode.LeftArrow) && !keyDown(KeyCode.DownArrow) && !keyDown(KeyCode.UpArrow) && !keyDown(KeyCode.RightArrow)) dashDirection = DashDirection.Left;
+			if (keyDown(KeyCode.RightArrow) && !keyDown(KeyCode.DownArrow) && !keyDown(KeyCode.UpArrow) && !keyDown(KeyCode.LeftArrow)) dashDirection = DashDirection.Right;
 			if (keyDown(KeyCode.Space)) PolygonHandler.ClearStats();
 		}
-		private void OnTriggerEnter2D(Collider2D other)
+		IEnumerator DelaySpawning(float timeInSeconds, Collider2D other)
 		{
-			if (!other.CompareTag("Polygon")) return;
+			yield return new WaitForSeconds(timeInSeconds * 0.3f);
 			InitTriggerVariables(other, out Color playerColor, out Sprite playerPolygonType, out Color collidedPolygonColor, out Sprite collidedPolygonPolygonType);
 			if (playerColor == collidedPolygonColor && playerPolygonType == collidedPolygonPolygonType)
 			{
 				PointHandler.AddPoints(1);
 				print($"Points: {PointHandler.GetPoints().ToString()} | Level: {DifficultyHandler.GetLevel().ToString()}");
 				GameHandler.ShouldSpawn = true;
-			}
-			else Die();
+				PlayerPrefs.SetInt("score", PointHandler.GetPoints());
+			} else Die();
+			yield return new WaitForSeconds(timeInSeconds * 0.1f);
+			other.GetComponent<SpriteRenderer>().enabled = true;
+			foreach (SpriteRenderer spriteRenderer in FindObjectsOfType<SpriteRenderer>()) spriteRenderer.enabled = true;
 			ResetPlayerPosition();
 		}
-		private static void Die()
+		private void OnTriggerEnter2D(Collider2D other)
 		{
+			if (other.CompareTag("Wall")) ResetPlayerPosition();
+			float counter = 0;
+			while (counter < 1)
+			{
+				counter += Time.deltaTime;
+				ResetPlayerPosition();
+			}
+			if (other.CompareTag("Polygon"))
+			{
+				other.GetComponent<SpriteRenderer>().enabled = false;
+				foreach (SpriteRenderer spriteRenderer in FindObjectsOfType<SpriteRenderer>()) spriteRenderer.enabled = false;
+				IEnumerator delaySpawning = DelaySpawning(1, other);
+				StartCoroutine(delaySpawning);
+			}
+		}
+		internal static void Die()
+		{
+			PlayerPrefs.SetInt("score", PointHandler.GetPoints());
 			PointHandler.ClearPoints();
 			print("You failed to choose the correct color/shape! (Died)");
-			AsyncOperation sceneToLoad = SceneManager.LoadSceneAsync((int)Scenes.Gameover, LoadSceneMode.Additive);
-			if (sceneToLoad.isDone) SceneManager.UnloadSceneAsync((int)Scenes.Gameplay);
+			Time.timeScale = 0;
+			SceneManager.LoadScene((int)Scenes.Gameplay);
+			Time.timeScale = 0;
+			//SceneManager.LoadScene((int)Scenes.Gameover);
 		}
+
 		private void ResetPlayerPosition()
 		{
 			dashDirection = DashDirection.NoDirection;

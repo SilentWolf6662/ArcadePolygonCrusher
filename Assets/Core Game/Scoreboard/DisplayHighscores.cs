@@ -1,15 +1,16 @@
 ﻿using System.Collections;
 using UnityEngine;
+using TMPro;
 // ReSharper disable IteratorNeverReturns
 namespace PolygonCrosser.Scoreboard
 {
 	public class DisplayHighscores : MonoBehaviour 
 	{
-		public TMPro.TextMeshProUGUI[] rNames;
-		public TMPro.TextMeshProUGUI[] rScores;
+		[SerializeField] private TextMeshProUGUI[] rNames;
+		[SerializeField] private TextMeshProUGUI[] rScores;
 		private Highscores myScores;
 
-		private void Start() //Fetches the Data at the beginning
+		private void Start() // Fetches the Data at the beginning
 		{
 			for (int i = 0; i < rNames.Length;i ++) rNames[i].text = $"{i + 1}. Fetching...";
 			myScores = GetComponent<Highscores>();

@@ -20,9 +20,9 @@ namespace PolygonCrosser
 	{
 		Gameplay = 0,
 		Gameover = 1,
-		MainMenu = 2,
-		SettingsMenu = 3,
-		Leaderboard = 4,
+		Leaderboard = 2,
+		MainMenu = 3,
+		SettingsMenu = 4,
 		SceneHandler = 5
 	}
 }
